@@ -1030,11 +1030,16 @@ class MDF3(object):
         conversion = grp['channel_conversions'][ch_nr]
         dependecy_block = grp['channel_dependencies'][ch_nr]
 
+        print("Getting channel #{} from group #{} ".format(ch_nr, gp_nr))
+
         try:
             parents, dtypes = grp['parents'], grp['types']
         except:
             grp['parents'], grp['types'] = self._prepare_record(grp)
             parents, dtypes = grp['parents'], grp['types']
+
+        print("dtypes is <{}> {}".format(type(dtypes), dtypes))
+
         # get data group record
         if not self.load_measured_data:
             data = self._load_group_data(grp)
@@ -1124,8 +1129,22 @@ class MDF3(object):
                 if (a, b) == (1, 0):
                     size = max(bits>>3, 1)
                     ch_fmt = get_fmt(channel['data_type'], size)
-                    if not vals.dtype == ch_fmt:
-                        vals = vals.astype(ch_fmt)
+                    # if not vals.dtype == ch_fmt:
+                    # vals = vals.astype(ch_fmt)
+                    #
+                    # ADDED BY JACK 9/20/17
+                    #
+                    # -- Let's see if we can figure out why Daniel is doing this second data type
+                    # conversion in this particular case! --
+                    try:
+                        if not vals.dtype == ch_fmt:  # Will implicitly test whether it's valid, because
+                                                      # dtype.__equals__ casts to dtype
+                            # If so, print a notice so we'll see it
+                            print("Current data type before linear conversion is {}".format(vals.dtype))
+                            print("Expected data type is {}".format(ch_fmt))
+                            print("This is probably why Daniel included the second get_fmt call in linear conversion!")
+                    except TypeError:  # Not a valid data type, e.g. '<u7'. Let's ignore it and not try to cast
+                        pass
                 else:
                     vals = vals * a
                     if b:
@@ -1556,7 +1575,6 @@ class MDF3(object):
                     gp['data_group']['data_block_addr'] = address
                     data = self._load_group_data(gp)
                     write(data)
-
 
 if __name__ == '__main__':
     pass
