@@ -1030,15 +1030,11 @@ class MDF3(object):
         conversion = grp['channel_conversions'][ch_nr]
         dependecy_block = grp['channel_dependencies'][ch_nr]
 
-        print("Getting channel #{} from group #{} ".format(ch_nr, gp_nr))
-
         try:
             parents, dtypes = grp['parents'], grp['types']
         except:
             grp['parents'], grp['types'] = self._prepare_record(grp)
             parents, dtypes = grp['parents'], grp['types']
-
-        print("dtypes is <{}> {}".format(type(dtypes), dtypes))
 
         # get data group record
         if not self.load_measured_data:
