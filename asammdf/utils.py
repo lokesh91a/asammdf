@@ -3,10 +3,6 @@ asammdf utility functions and classes
 '''
 import itertools
 import re
-try:
-    from functools import lru_cache
-except ImportError:
-    from backports.functools_lru_cache import lru_cache
 
 from numpy import issubdtype, signedinteger, unsignedinteger, floating, flexible
 
@@ -72,7 +68,6 @@ def dtype_mapping(invalue, outversion=3):
     return res
 
 
-@lru_cache(100)
 def get_fmt(data_type, size, version=3):
     """convert mdf channel data type to numpy dtype format string
 
@@ -146,7 +141,6 @@ def get_fmt(data_type, size, version=3):
     return fmt
 
 
-@lru_cache(100)
 def fmt_to_datatype(fmt, version=3):
     """convert numpy dtype format string to mdf channel data type and size
 
